@@ -2,7 +2,7 @@ JBHeaderScroll
 ================
 An Android library that provides the functionality to allow scrollable containers to show or hide headers while scrolling.
 
-![JBHeaderScroll](https://github.com/JohannBlake/JBHeaderScroll/blob/master/Graphics/JBHeaderScroll.gif)
+![JBHeaderScroll](https://github.com/JohannBlake/JBHeaderScroll/blob/master/Graphics/JBHeaderScroll-Demo.gif)
 
 
 
@@ -10,17 +10,17 @@ An Android library that provides the functionality to allow scrollable container
 
 A growing tendency in improving the user experience in Android apps is to maximize the amount of screen real estate when viewing content that requires scrolling. Examples of this are image galleries, contact lists and browsing web pages. On many of these screens, a section at the top of the screen may be used for things like a toolbar. Lists may have a header showing column names. Sometimes these headers remain fixed at the top of the list while sometimes they scroll with the list items.
 
-Collectively, toolbars, list headers and any other type of view that appears above some scrollable area are referred to in JBHeaderScroll as "headers". Area beneath the header can be any kind of scrollable content such as a ListView, ScrollView, RecyclerView, WebView or even a LinearLayout or RelativeLayout. Collectively, these scrollable containers are referred to in JBHeaderScroll as "scrollers". The only scroller that JBHeaderScroll does not support is the ActionBar. If you are using an ActionBar, you should replace it with a Toolbar.
+Collectively, toolbars, list headers and any other type of view that appears above some scrollable area are referred to in JBHeaderScroll as "headers". Area beneath the header can be any kind of scrollable content such as a ListView, ScrollView, RecyclerView, WebView or even a LinearLayout or RelativeLayout. Collectively, these scrollable containers are referred to in JBHeaderScroll as "scrollers". The only scroller that JBHeaderScroll has not been tested on is the ActionBar. If you are using an ActionBar, you should replace it with a Toolbar as ActionBar has been deprecated. ActionBar also has its own built-in scrollable hiding/showing although this is apparently very difficult to implement.
 
-When a header at the top of a list remains fixed, that is often a desirable feature because as the user scrolls the list, they may want to see at glance the name of a column that data in a list item belongs to. But if you had a list that was only showing images or data that isn't laid out in a column, the header might be used to act as a toolbar to provide contextual features such as selecting list items or sliding out a navigation view from the right or left side of the list. In these cases, having the header remain in a fixed location all the time reduces the height of the area beneath the header that is used for the scrollable content.
+When a header at the top of a list remains fixed, that is often a desirable feature because as the user scrolls the list, they may want to see at glance the name of a column that data in a list item belongs to (presuming you're showing columns of data). But if you had a list that was only showing images or data that isn't laid out in a column, the header might be used to act as a toolbar to provide contextual features such as selecting list items or sliding out a navigation view from the right or left side of the list. In these cases, having the header remain in a fixed location all the time reduces the height of the area beneath the header that is used for the scrollable content. When scrolling content that contains images, some images are large enough to cover the entire height of the screen. Often it's nice to see the entire image at a glance but this would not be possible if a fixed header was reducing the amount of visible space. You could however just let the user tap on the image and show the image in a view that takes up the entire screen. But that may be unnecessary and somewhat messy if the image was embedded in HTML content shown in a WebView.
 
-A better way to increase screen area is to hide the header as the user scrolls down but then show it when they scroll up. Apps like Google's Newstand does this.
+A better way to increase screen area is to hide the header as the user scrolls down but then show it when they scroll up. Apps like Google's Newstand do this.
 
 While it may seem trivial to code, showing and hiding the header during scrolling is indeed a complex undertaking due to how Android passes motion events from the screen through the view hierarchy. It is also complicated by the fact that there is no consistent way scrolling events can be intercepted in controls that provide scrolling capabilities. For example, a ListView has built in scrolling events that can indicate where the current scroll position is but this is based upon the item position. The absolute position of the top item can be computed as a workaround but other problems eventually crop up. A ScrollView has a different mechanism to report the scrolling position. And a WebView has a completely different one as well.
 
 Attempting to resize and reposition controls during scrolling can be tricky as this can actually interfere with the motion events that are being received.
 
-JBHeaderScroll provides a simple and unified means to show or hide the header while the user scrolls the scroller content. If the user scrolls only a small amount and releases their finger but the header is still partially showing, JBHeaderScroll will automatically either show the entire header or hide it all together and this is done by animating it into or out of view. A header will not remain partially visible. Whether it shows or hides the header depends on how much of the header is visible when the user releases their finger. If more than half of the header is visible, it will be animated downward to be shown entirely. If less than half is shown, it will be animated upward until it is no longer visible.
+JBHeaderScroll provides a unified means to show or hide the header while the user scrolls the scroller content. If the user scrolls only a small amount and releases their finger but the header is still partially showing, JBHeaderScroll will automatically either show the entire header or hide it all together and this is done by animating it into or out of view. A header will not remain partially visible. Whether it shows or hides the header depends on how much of the header is visible when the user releases their finger. If more than half of the header is visible, it will be animated downward to be shown entirely. If less than half is shown, it will be animated upward until it is no longer visible.
 
 
 ### Demo & Integration
@@ -33,6 +33,7 @@ The demo contains four separate demos:
 2. A ScrollView with a Toolbar.
 3. A WebView with a Toolbar.
 4. Two ListViews with a Toolbar common to both and one ListView having its own header (a LinearLayout).
+
 
 ### Integration
 
@@ -112,7 +113,7 @@ In this layout file, a toolbar acts as the header while the CustomListView is us
 </RelativeLayout>
 ```
 
-What is important to realize is that the scroller (in this case the CustomListView) must fill it's parent container. Notice that the top edge of the CustomListView is not aligned with the bottom edge of the toolbar. The top edge of your scroller should be aligned with the top edge of your header (here, the toolbar). JBHeaderScroll along with some additional code in your activity (shown below) will automatically reposition the scroller so that its top edge is somewhere between the top and bottom edge of the header. When the scroller is initially displayed, the top edge of the scroller will be aligned with the bottom edge of the header but then be adjusted as the user scrolls. Regardless how you lay out your views, it must be possible for the scroller's top edge to move up to the top edge of the header. If you need to place the scroller, such as a ListView, inside of another container, you should subclass that container as you did with the CustomListView (but not subclass ListView). In this case, the container is acting as your scroller.
+What is important to realize is that the scroller (in this case the CustomListView) must fill it's parent container. Notice that the top edge of the CustomListView is not aligned with the bottom edge of the toolbar. The top edge of your scroller should be aligned with the top edge of your header (here, the toolbar). JBHeaderScroll along with some additional code in your activity (shown below) will automatically reposition the scroller so that its top edge is somewhere between the top and bottom edge of the header. When the scroller is initially displayed, the top edge of the scroller will be aligned with the bottom edge of the header but then be adjusted as the user scrolls. Regardless how you lay out your views, it must be possible for the scroller's top edge to move up to the top edge of the header. This means that the scroller and header should be sibling views in the same container. If you need to place the scroller, such as a ListView, inside of another container, you should subclass that container as you did with the CustomListView (but not subclass ListView). In this case, the container is acting as your scroller.
 
 In your activity's onCreate method, you initialize the JBHeaderScroll:
 
@@ -205,13 +206,15 @@ Instaniating the JBHeaderScroll is done with:
 jbHeaderScroll = new JBHeaderScroll(toolbar, 0);
 ```
 
+The second parameter in the registerScroller method is used to indicate the header's "visual" top edge's offset. In most cases, the top edge of the header will be aligned to the top edge of its parent container, in which case the offset is zero. But in some rare cases, if you need to visually offset the header's top header, you need to indicate how much offset is being used. This is specified in dp units. It is possible to create a layout where the header has padding around the top edge making it look like the header is offset within its parent container. If you left the offset to zero in the second parameter and began scrolling, the scroller would start to show beyond the top edge of the header. So if you had a top padding of 10dp, you should set the second parameter to 10.
+
 You also need to initially change the top edge of the scroller:
 
 ``` xml
 listview.setY(toolbar.getHeight());
 ```
 
-You must register your scroller with:
+You then register your scroller with:
 
 ``` xml
 jbHeaderScroll.registerScroller
@@ -219,9 +222,7 @@ jbHeaderScroll.registerScroller
 
 In this example, we are only using a Toolbar and a ListView, so only one scroller is being registered. But you can have a case where you want to have multiple scrollers that might share a common header and when one scroller is scrolled, JBHeaderScroll will make sure that no gap remains above any of the other scrollers. If you are using multiple scrollers and want them synchronized, you only use a single JBHeaderScroll instance and register each scroller. An example of this might be where you have two scrollers laid out horizontally next to each other. The left scroller might be a ListView while the right scroller might be a ScrollView. Both might share a common Toolbar that stretches across the top of both scrollers. When you scroll the left scroller up, JBHeaderScroll will automatically scroll the right one up but only until the header is no longer visible and stop scrolling the right scroller. If you then began scrolling down, the header will scroll down but the right scroller will not scroll down. It only scrolls up initially to prevent a gap from showing above it. But if your scroll the right scroller down, you will see the top position of the scroller.
 
-If a scroller were to contain a custom control that had its own header and own scroller but you don't want it synchronized with the parent scroller, you need to use a separate JBHeaderScroll instance to manage its scrolling. You would not use the parent scroller's JBHeaderScroll instance and register the child scroller. The nested header demo illustrates using two scrollers sharing a common JBHeaderScroll instance while one of the scrollers has a ListView with its own JBHeaderScroll.
-
-The second parameter in the registerScroller method is used to indicate the header's "visual" top edge's offset. In most cases, the top edge of the header will be aligned to the top edge of its parent container, in which case the offset is zero. But in some rare cases, if you need to visually offset the header's top header, you need to indicate how much offset is being used. This is specified in dp units. It is possible to create a layout where the header is inside a container with it's top edge aligned to the top edge of the container but the container's top edge is offset within its parent container making it look like the header is offset. If you left the offset to zero in the second parameter and began scrolling, the scroller would start to show beyond the top edge of the header.
+If a scroller were to contain a custom control that had its own header and own scroller but you don't want it synchronized with the parent scroller, you need to use a separate JBHeaderScroll instance to manage its scrolling. You would not use the parent scroller's JBHeaderScroll instance to register the child scroller. The nested header demo illustrates using two scrollers sharing a common JBHeaderScroll instance while one of the scrollers has a ListView with its own JBHeaderScroll.
 
 In the onResize method shown above, you need to provide code that will reposition your scroller. This method gets called when the user scrolls the scroller. JBHeaderScroll will provide the Top position that you need to move your scroller to. JBHeaderScroll cannot do this for you because it doesn't know anything about your layout. Your scroller may be embedded in some complex hierarchy view. JBHeaderScroll only tracks scrolling positions but you must reposition and possibly resize your scroller.
 
@@ -235,9 +236,9 @@ ANIMATE_HEADER_UP
 ANIMATE_HEADER_DOWN
 ```
 
-The onHeaderBeforeAnimation method has two parameters - scrollingUp and scrollDelta. If scrolling up is set to true, it means that JBHeaderScroll is about to scroll the header up. False means it will be scrolled down. scrollDelta indicate the amount of scrollng that took place from the original location when the user pressed their finger down to the location where they released their finger.
+The onHeaderBeforeAnimation method has two parameters - scrollingUp and scrollDelta. If scrolling up is set to true, it means that JBHeaderScroll is about to scroll the header up. False means it will be scrolled down. scrollDelta indicate the amount of scrolling that took place from the original location when the user pressed their finger down to the location where they released their finger. onHeaderBeforeAnimation is only called after the user releases their finger.
 
-The onHeaderAfterAnimation gets called after the header has been animated either fully up or down. You can use this for whatever purpose you need.
+The onHeaderAfterAnimation gets called after the header has been animated either fully up or down. You can use this for whatever purpose you need. onHeaderAfterAnimation is only called after the user releases their finger.
 
 Finally, you need to call setJBHeaderRef on the scroller. This stores a reference of the JBHeaderScroll with the scroller and is needed to communicate motion events with the JBHeaderScroll.
 
