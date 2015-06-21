@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Background colors -->
+    <color name="primaryColor">@color/light_blue_600</color>
+    <color name="accentColor">@color/light_blue_100</color>
+
+    <!-- Text colors -->
+    <color name="primary_text_color">#dd000000</color>
+    <color name="secondary_text_color">#89000000</color>
+
+    <!-- Toolbar -->
+    <color name="toolbar_text">#ffffff</color>
+
+</resources>
