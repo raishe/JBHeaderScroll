@@ -103,7 +103,6 @@ In this layout file, a toolbar acts as the header while the CustomListView is us
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_below="@id/toolbar"
-        android:layout_alignParentBottom="true"
         android:background="#ffffffff"
         android:cacheColorHint="#00000000"
         android:divider="#c0c0c0"
@@ -118,7 +117,7 @@ What is important to realize is that the scroller (in this case the CustomListVi
 In your activity's onCreate method, you initialize the JBHeaderScroll:
 
 ``` xml
- @Override
+  @Override
   protected void onCreate(Bundle savedInstanceState)
   {
     try
@@ -151,21 +150,34 @@ In your activity's onCreate method, you initialize the JBHeaderScroll:
             jbHeaderScroll.registerScroller(listview, new JBHeaderScroll.IJBHeaderScroll()
             {
               @Override
-              public void onResize(float top)
+              public void onReposition(float top, boolean scrollingUp, float scrollDelta)
               {
                 try
                 {
+                  int pos = listview.getFirstVisiblePosition();
+                  float y = listview.getChildAt(pos).getY();
+
                   // The list's view top edge must be adjusted during scrolling.
                   // IMPORTANT: Make sure you use the correct type of LayoutParams which is the type that applies to the parent
                   // container of the listview.
-                  RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                  listview.setLayoutParams(layoutParams);
-                  listview.setY(top);
-                  toolbar.bringToFront();  // This may be necessary in your app depending on your layout.
+
+                  // When the user releases their finger while scrolling very slowly, the jitter from their finger
+                  // may result in a slight amount of scrolling downward. This can result in a side effect of the
+                  // header animating down when it might have animated up depending on its current position. To
+                  // avoid this, avoid repositioning the scroller for small amounts of scrolling. You may need to
+                  // play with this value.
+
+                  if (scrollingUp || (!scrollingUp && (scrollDelta > 5)))
+                  {
+                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                    layoutParams.setMargins(0, (int) top, 0, 0);
+                    listview.setLayoutParams(layoutParams);
+                    toolbar.bringToFront(); // Necessary if your scroller is rendered last.
+                  }
                 }
                 catch (Exception ex)
                 {
-                  Log.e(LOG_TAG, "onResize: " + ex.toString());
+                  Log.e(LOG_TAG, "onReposition: " + ex.toString());
                 }
               }
 
@@ -224,7 +236,7 @@ In this example, we are only using a Toolbar and a ListView, so only one scrolle
 
 If a scroller were to contain a custom control that had its own header and own scroller but you don't want it synchronized with the parent scroller, you need to use a separate JBHeaderScroll instance to manage its scrolling. You would not use the parent scroller's JBHeaderScroll instance to register the child scroller. The nested header demo illustrates using two scrollers sharing a common JBHeaderScroll instance while one of the scrollers has a ListView with its own JBHeaderScroll.
 
-In the onResize method shown above, you need to provide code that will reposition your scroller. This method gets called when the user scrolls the scroller. JBHeaderScroll will provide the Top position that you need to move your scroller to. JBHeaderScroll cannot do this for you because it doesn't know anything about your layout. Your scroller may be embedded in some complex hierarchy view. JBHeaderScroll only tracks scrolling positions but you must reposition and possibly resize your scroller.
+In the onReposition method shown above, you need to provide code that will reposition your scroller. This method gets called when the user scrolls the scroller. JBHeaderScroll will provide the Top position that you need to move your scroller to. JBHeaderScroll cannot do this for you because it doesn't know anything about your layout. Your scroller may be embedded in some complex hierarchy view. JBHeaderScroll only tracks scrolling positions but you must reposition and possibly resize your scroller. Whether you move your scroller by setting using setY() or modifying the top margin will depend on how your views are laid out. The example above sets the margin (even though initially we used setY(). The nested header demo however uses setY().
 
 When the user releases their finger from scrolling, JBHeaderScroll will decide whether the header needs to be animated fully into view or fully out of view. Before animating in one of these directions, you have the option of overriding the decision made by JBHeaderScroll and indicate whether you prefer to have the header shown or hidden.
 

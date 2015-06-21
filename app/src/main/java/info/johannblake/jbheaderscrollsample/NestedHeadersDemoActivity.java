@@ -70,21 +70,31 @@ public class NestedHeadersDemoActivity extends Activity
             jbHeaderScrollOuter.registerScroller(listview1, new JBHeaderScroll.IJBHeaderScroll()
             {
               @Override
-              public void onResize(float top)
+              public void onReposition(float top, boolean scrollingUp, float scrollDelta)
               {
                 try
                 {
                   // The list's view top edge must be adjusted during scrolling.
                   // IMPORTANT: Make sure you use the correct type of LayoutParams which is the type that applies to the parent
                   // container of the listview.
-                  LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1.0f);
-                  listview1.setLayoutParams(layoutParams);
-                  listview1.setY(top);
-                  toolbar.bringToFront();  // This may be necessary in your app depending on your layout.
+
+                  // When the user releases their finger while scrolling very slowly, the jitter from their finger
+                  // may result in a slight amount of scrolling downward. This can result in a side effect of the
+                  // header animating down when it might have animated up depending on its current position. To
+                  // avoid this, avoid repositioning the scroller for small amounts of scrolling. You may need to
+                  // play with this value.
+
+                  if (scrollingUp || (!scrollingUp && (scrollDelta > 5)))
+                  {
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1.0f);
+                    listview1.setY(top);
+                    listview1.setLayoutParams(layoutParams);
+                    toolbar.bringToFront(); // Necessary if your scroller is rendered last.
+                  }
                 }
                 catch (Exception ex)
                 {
-                  Log.e(LOG_TAG, "onResize: " + ex.toString());
+                  Log.e(LOG_TAG, "onReposition: " + ex.toString());
                 }
               }
 
@@ -110,21 +120,25 @@ public class NestedHeadersDemoActivity extends Activity
             jbHeaderScrollOuter.registerScroller(customScroller1, new JBHeaderScroll.IJBHeaderScroll()
             {
               @Override
-              public void onResize(float top)
+              public void onReposition(float top, boolean scrollingUp, float scrollDelta)
               {
                 try
                 {
                   // The list's view top edge must be adjusted during scrolling.
                   // IMPORTANT: Make sure you use the correct type of LayoutParams which is the type that applies to the parent
                   // container of the listview.
-                  LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
-                  customScroller1.setLayoutParams(layoutParams);
-                  customScroller1.setY(top);
-                  toolbar.bringToFront();  // This may be necessary in your app depending on your layout.
+
+                  if (scrollingUp || (!scrollingUp && (scrollDelta > 5)))
+                  {
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT, 1f);
+                    customScroller1.setY(top);
+                    customScroller1.setLayoutParams(layoutParams);
+                    toolbar.bringToFront(); // Necessary if your scroller is rendered last.
+                  }
                 }
                 catch (Exception ex)
                 {
-                  Log.e(LOG_TAG, "onResize: " + ex.toString());
+                  Log.e(LOG_TAG, "onReposition: " + ex.toString());
                 }
               }
 
@@ -152,21 +166,25 @@ public class NestedHeadersDemoActivity extends Activity
             jbHeaderScrollInner.registerScroller(listview2, new JBHeaderScroll.IJBHeaderScroll()
             {
               @Override
-              public void onResize(float top)
+              public void onReposition(float top, boolean scrollingUp, float scrollDelta)
               {
                 try
                 {
                   // The list's view top edge must be adjusted during scrolling.
                   // IMPORTANT: Make sure you use the correct type of LayoutParams which is the type that applies to the parent
                   // container of the listview.
-                  RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                  listview2.setLayoutParams(layoutParams);
-                  listview2.setY(top);
-                  llHeader2.bringToFront();  // This may be necessary in your app depending on your layout.
+
+                  if (scrollingUp || (!scrollingUp && (scrollDelta > 5)))
+                  {
+                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                    listview2.setY(top);
+                    listview2.setLayoutParams(layoutParams);
+                    llHeader2.bringToFront(); // Necessary if your scroller is rendered last.
+                  }
                 }
                 catch (Exception ex)
                 {
-                  Log.e(LOG_TAG, "onResize: " + ex.toString());
+                  Log.e(LOG_TAG, "onReposition: " + ex.toString());
                 }
               }
 
@@ -183,7 +201,6 @@ public class NestedHeadersDemoActivity extends Activity
             });
 
             listview2.setJBHeaderRef(jbHeaderScrollInner);
-
 
 
             toolbar.getViewTreeObserver().removeOnGlobalLayoutListener(this);

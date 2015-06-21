@@ -305,7 +305,7 @@ public class JBHeaderScroll
             if (newTop < this.scrollerMinTopY)
               newTop = this.scrollerMinTopY;
 
-            scrollerContent.iJBHeaderScroll.onResize(newTop);
+            scrollerContent.iJBHeaderScroll.onReposition(newTop, scrollingUp, scrollDelta);
           }
         }
         else
@@ -328,7 +328,7 @@ public class JBHeaderScroll
             newTop = this.scrollerMaxTopY;
 
           if (this.scrollableContent.iJBHeaderScroll != null)
-            this.scrollableContent.iJBHeaderScroll.onResize(newTop);
+            this.scrollableContent.iJBHeaderScroll.onReposition(newTop, scrollingUp, scrollDelta);
         }
       }
       else
@@ -349,7 +349,7 @@ public class JBHeaderScroll
             newTop = this.scrollerMinTopY;
 
           if (this.scrollableContent.iJBHeaderScroll != null)
-            this.scrollableContent.iJBHeaderScroll.onResize(newTop);
+            this.scrollableContent.iJBHeaderScroll.onReposition(newTop, scrollingUp, scrollDelta);
         }
         else
         {
@@ -369,7 +369,7 @@ public class JBHeaderScroll
             newTop = this.scrollerMaxTopY;
 
           if (this.scrollableContent.iJBHeaderScroll != null)
-            this.scrollableContent.iJBHeaderScroll.onResize(newTop);
+            this.scrollableContent.iJBHeaderScroll.onReposition(newTop, scrollingUp, scrollDelta);
         }
       }
     }
@@ -595,7 +595,7 @@ public class JBHeaderScroll
 
   public interface IJBHeaderScroll
   {
-    void onResize(float top);
+    void onReposition(float top, boolean scrollingUp, float scrollDelta);
 
     int onHeaderBeforeAnimation(boolean scrollingUp, float scrollDelta);
 

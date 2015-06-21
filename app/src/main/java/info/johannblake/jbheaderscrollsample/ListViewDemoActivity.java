@@ -57,21 +57,34 @@ public class ListViewDemoActivity extends Activity
             jbHeaderScroll.registerScroller(listview, new JBHeaderScroll.IJBHeaderScroll()
             {
               @Override
-              public void onResize(float top)
+              public void onReposition(float top, boolean scrollingUp, float scrollDelta)
               {
                 try
                 {
+                  int pos = listview.getFirstVisiblePosition();
+                  float y = listview.getChildAt(pos).getY();
+
                   // The list's view top edge must be adjusted during scrolling.
                   // IMPORTANT: Make sure you use the correct type of LayoutParams which is the type that applies to the parent
                   // container of the listview.
-                  RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
-                  listview.setLayoutParams(layoutParams);
-                  listview.setY(top);
-                  toolbar.bringToFront();  // This may be necessary in your app depending on your layout.
+
+                  // When the user releases their finger while scrolling very slowly, the jitter from their finger
+                  // may result in a slight amount of scrolling downward. This can result in a side effect of the
+                  // header animating down when it might have animated up depending on its current position. To
+                  // avoid this, avoid repositioning the scroller for small amounts of scrolling. You may need to
+                  // play with this value.
+
+                  if (scrollingUp || (!scrollingUp && (scrollDelta > 5)))
+                  {
+                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                    layoutParams.setMargins(0, (int) top, 0, 0);
+                    listview.setLayoutParams(layoutParams);
+                    toolbar.bringToFront(); // Necessary if your scroller is rendered last.
+                  }
                 }
                 catch (Exception ex)
                 {
-                  Log.e(LOG_TAG, "onResize: " + ex.toString());
+                  Log.e(LOG_TAG, "onReposition: " + ex.toString());
                 }
               }
 
