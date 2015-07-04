@@ -154,9 +154,6 @@ In your activity's onCreate method, you initialize the JBHeaderScroll:
               {
                 try
                 {
-                  int pos = listview.getFirstVisiblePosition();
-                  float y = listview.getChildAt(pos).getY();
-
                   // The list's view top edge must be adjusted during scrolling.
                   // IMPORTANT: Make sure you use the correct type of LayoutParams which is the type that applies to the parent
                   // container of the listview.
